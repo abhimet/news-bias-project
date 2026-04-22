@@ -14,6 +14,15 @@ from torch.optim import AdamW
 from transformers import get_linear_schedule_with_warmup
 from clearml import Task
 
+parser = argparse.ArgumentParser()
+parser.add_argument("--model", type=str, choices=["bert", "distilbert"], required=True)
+args = parser.parse_args()
+
+if args.model == "bert":
+    MODEL_NAME = "bert-base-uncased"
+else:
+    MODEL_NAME = "distilbert-base-uncased"
+
 #all configurations
 THRESHOLD = 0.80
 MAX_LEN = 256
@@ -25,22 +34,22 @@ VERSION_FILE = "model_version.txt"
 
 import pandas as pd
 df = pd.read_csv("bias_clean.csv")
-# print(df["bias"].unique())
-# print(df.columns.tolist())
+print(df["bias"].unique())
+print(df.columns.tolist())
 
-# #changing bias labels 
-# df["original_bias"] = df["bias"]
+#changing bias labels 
+df["original_bias"] = df["bias"]
 
-# # having 3 classes for training so clean
-# df["bias"] = df["bias"].replace({
-#     "leaning-left": "left",
-#     "leaning-right": "right"
-# })
+# having 3 classes for training so clean
+df["bias"] = df["bias"].replace({
+    "leaning-left": "left",
+    "leaning-right": "right"
+})
 
-# # dropping bad rows
-# df = df.dropna(subset=["page_text", "bias"])
+# dropping bad rows
+df = df.dropna(subset=["page_text", "bias"])
 
-# print(df["bias"].value_counts())
+print(df["bias"].value_counts())
 
 #page text
 texts = df["page_text"].values
@@ -60,4 +69,10 @@ X_train, X_test, y_train, y_test, idx_train, idx_test = train_test_split(
   test_size=0.2,
   random_state=42,
   stratify=labels
+)
+
+#initializing clearml
+task = Task.init(
+    project_name="Bias Detection",
+    task_name="bert_vs_distilbert"
 )
