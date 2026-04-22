@@ -76,3 +76,6 @@ task = Task.init(
     project_name="Bias Detection",
     task_name="bert_vs_distilbert"
 )
+
+#tokenizing text
+tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
