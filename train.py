@@ -25,22 +25,22 @@ VERSION_FILE = "model_version.txt"
 
 import pandas as pd
 df = pd.read_csv("bias_clean.csv")
-print(df["bias"].unique())
-print(df.columns.tolist())
+# print(df["bias"].unique())
+# print(df.columns.tolist())
 
-#changing bias labels 
-df["original_bias"] = df["bias"]
+# #changing bias labels 
+# df["original_bias"] = df["bias"]
 
-# having 3 classes for training so clean
-df["bias"] = df["bias"].replace({
-    "leaning-left": "left",
-    "leaning-right": "right"
-})
+# # having 3 classes for training so clean
+# df["bias"] = df["bias"].replace({
+#     "leaning-left": "left",
+#     "leaning-right": "right"
+# })
 
-# dropping bad rows
-df = df.dropna(subset=["page_text", "bias"])
+# # dropping bad rows
+# df = df.dropna(subset=["page_text", "bias"])
 
-print(df["bias"].value_counts())
+# print(df["bias"].value_counts())
 
 #page text
 texts = df["page_text"].values
@@ -49,3 +49,15 @@ labels = df["bias"].values
 #label encoding
 le = LabelEncoder()
 labels = le.fit_transform(labels)
+
+print(dict(zip(le.classes_, le.transform(le.classes_))))
+
+#train test split
+X_train, X_test, y_train, y_test, idx_train, idx_test = train_test_split(
+  texts,
+  labels,
+  df.index,
+  test_size=0.2,
+  random_state=42,
+  stratify=labels
+)
