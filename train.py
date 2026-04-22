@@ -41,3 +41,5 @@ df["bias"] = df["bias"].replace({
 df = df.dropna(subset=["page_text", "bias"])
 
 print(df["bias"].value_counts())
+
+#
