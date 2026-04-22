@@ -42,4 +42,10 @@ df = df.dropna(subset=["page_text", "bias"])
 
 print(df["bias"].value_counts())
 
-#
+#page text
+texts = df["page_text"].values
+labels = df["bias"].values
+
+#label encoding
+le = LabelEncoder()
+labels = le.fit_transform(labels)
