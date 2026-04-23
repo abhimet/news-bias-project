@@ -101,3 +101,8 @@ class TextDataset(Dataset):
             max_length=MAX_LEN,
             return_tensors="pt"
         )
+        return {
+            "input_ids": encoding["input_ids"].squeeze(),
+            "attention_mask": encoding["attention_mask"].squeeze(),
+            "labels": torch.tensor(self.labels[idx], dtype=torch.long)
+        }
