@@ -94,4 +94,10 @@ class TextDataset(Dataset):
         return len(self.texts)
 
     def __getitem__(self, idx):
-        
+        encoding = self.tokenizer(
+            self.texts[idx],
+            padding="max_length",
+            truncation=True,
+            max_length=MAX_LEN,
+            return_tensors="pt"
+        )
