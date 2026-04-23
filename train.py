@@ -106,3 +106,5 @@ class TextDataset(Dataset):
             "attention_mask": encoding["attention_mask"].squeeze(),
             "labels": torch.tensor(self.labels[idx], dtype=torch.long)
         }
+
+train_dataset = TextDataset(X_train, y_train, tokenizer)
