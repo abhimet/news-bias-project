@@ -108,3 +108,49 @@ class TextDataset(Dataset):
         }
 
 train_dataset = TextDataset(X_train, y_train, tokenizer)
+test_dataset = TextDataset(X_test, y_test, tokenizer)
+
+train_loader = DataLoader(train_dataset, batch_size=BATCH, shuffle=True)
+test_loader = DataLoader(test_dataset, batch_size=BATCH, shuffle=False)
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+model.to(device)
+
+print(device)
+
+optimizer = AdamW(model.parameters(), lr=LR, weight_decay=0.01)
+
+total_steps = len(train_loader) * EPOCHS
+
+scheduler = get_linear_schedule_with_warmup(
+    optimizer,
+    num_warmup_steps=int(0.1 * total_steps),
+    num_training_steps=total_steps
+)
+
+for epoch in range (EPOCHS):
+    model.train()
+
+    total_loss = 0
+
+    for batch in train_loader:
+        optimizer.zero_grad()
+
+        input_ids = batch["input_ids"].to(device)
+        attention_mask = batch["attention_mask"].to(device)
+        labels = batch["labels"].to(device)
+
+        outputs = model(
+            input_ids=input_ids,
+            attention_mask=attention_mask,
+            labels=labels
+        )
+
+        loss = outputs.loss
+        loss.backward()
+
+        optimizer.step()
+        scheduler.step()
+
+        total_loss += loss.item()
+    print(f"Epoch {epoch+1}/{EPOCHS} | Loss: {total_loss:.4f}")
