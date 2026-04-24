@@ -154,3 +154,24 @@ for epoch in range (EPOCHS):
 
         total_loss += loss.item()
     print(f"Epoch {epoch+1}/{EPOCHS} | Loss: {total_loss:.4f}")
+    
+model.eval()
+
+total_predictions = []
+total_labels = []
+
+with torch.no_grad():
+    for batch in test_loader:
+        input_ids = batch["input_ids"].to(device)
+        attention_mask = batch["attention_mask"].to(device)
+        labels = batch["labels"].to(device)
+
+        outputs = model(
+            input_ids=input_ids,
+            attention_mask=attention_mask
+        )
+
+        preds = torch.argmax(outputs.logits, dim=1)
+
+        total_predictions.extend(preds.cpu().numpy())
+        total_labels.extend(labels.cpu().numpy())
